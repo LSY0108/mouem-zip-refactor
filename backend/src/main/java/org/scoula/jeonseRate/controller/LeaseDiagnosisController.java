@@ -46,11 +46,13 @@ public class LeaseDiagnosisController {
     @GetMapping("/result")
     public ResponseEntity<?> getJeonseAnalysisResult(@RequestParam("registerId") int registerId) {
         log.info("[시작] 전세가율 컨트롤러 조회 요청: 등기부ID={}", registerId);
-        Map<String, Object> result = leaseDiagnosisService.getJeonseAnalysisResult(registerId);
+        JeonseRateDTO result = leaseDiagnosisService.getJeonseAnalysisResult(registerId);
 
-        if (result.containsKey("error")) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+        if (result == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("전세가율 정보가 없습니다.");
         }
+
         log.info("[완료] 전세가율 컨트롤러 조회 성공: 등기부ID={}", registerId);
         return ResponseEntity.ok(result);
     }

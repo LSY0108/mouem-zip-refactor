@@ -40,25 +40,6 @@ public class RedisConfig {
         return new LettuceConnectionFactory(redisHost, redisPort);
     }
 
-//    @PostConstruct
-//    public void init() {
-//        log.info("RedisConfig loaded successfully!");
-//    }
-
-//    @Bean
-//    public ObjectMapper redisObjectMapper() {
-//        ObjectMapper mapper = new ObjectMapper();
-//        mapper.registerModule(new JavaTimeModule());
-//        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-//        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-//
-//        mapper.activateDefaultTyping(
-//                mapper.getPolymorphicTypeValidator(),
-//                ObjectMapper.DefaultTyping.NON_FINAL
-//        );
-//
-//        return mapper;
-//    }
 
     /**
      * typedMapper()
@@ -78,47 +59,16 @@ public class RedisConfig {
         return mapper;
     }
 
-    /**
-     * plainMapper()
-     * - 단순 Map, 기본 타입(Integer, String 등) 캐싱할 때 사용
-     * - 타입 정보를 저장하지 않아 JSON이 더 가볍고 호환성 좋음
-     * - 예: diagnosis:result 처럼 Map 형태로 저장하는 캐시
-     */
-    private ObjectMapper plainMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        return mapper;
-    }
 
     @Bean
     public RedisCacheManager cacheManager (RedisConnectionFactory cf, ObjectMapper redisObjectMapper) {
-//        ObjectMapper mapper = new ObjectMapper();
-//        mapper.registerModule(new JavaTimeModule());
-//        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-//        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
-//        var serializer = new GenericJackson2JsonRedisSerializer(redisObjectMapper);
-//        var base = RedisCacheConfiguration.defaultCacheConfig()
-//                .entryTtl(Duration.ofMinutes(10))
-//                .disableCachingNullValues()
-//                .serializeValuesWith(
-//                        RedisSerializationContext.SerializationPair.fromSerializer(serializer)
-//                );
 
         var typedSerializer = new GenericJackson2JsonRedisSerializer(typedMapper());
-        var plainSerializer = new GenericJackson2JsonRedisSerializer(plainMapper());
 
         var defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(10))
                 .disableCachingNullValues()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(typedSerializer));
-
-        var mapConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(10))
-                .disableCachingNullValues()
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(plainSerializer));
 
         // 캐시 이름별 TTL
         Map<String, RedisCacheConfiguration> perCache = new HashMap<>();
@@ -126,7 +76,7 @@ public class RedisConfig {
         perCache.put("reports:detail", defaultConfig.entryTtl(Duration.ofDays(7)));
         perCache.put("contracts:list", defaultConfig.entryTtl(Duration.ofMinutes(15)));
         perCache.put("contracts:detail", defaultConfig.entryTtl(Duration.ofMinutes(30)));
-        perCache.put("diagnosis:result", mapConfig.entryTtl(Duration.ofDays(7))); // Map 캐시
+        perCache.put("diagnosis:result", defaultConfig.entryTtl(Duration.ofDays(7))); // Map 캐시
         perCache.put("safety:result", defaultConfig.entryTtl(Duration.ofDays(7)));
         perCache.put("registry:list", defaultConfig.entryTtl(Duration.ofMinutes(5)));
 
