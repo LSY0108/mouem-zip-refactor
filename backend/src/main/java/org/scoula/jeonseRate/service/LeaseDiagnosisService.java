@@ -209,15 +209,20 @@ public class LeaseDiagnosisService {
     }
 
     @Cacheable(value = "diagnosis:result", key = "#registerId")
-    public Map<String, Object> getJeonseAnalysisResult(int registerId) {
+    public JeonseRateDTO getJeonseAnalysisResult(int registerId) {
         log.info("[시작] 전세가율 서비스 조회 요청: 등기부ID={}", registerId);
         Integer ratio  = jeonseAnalysisMapper.findJeonseRatioByRegisterId(registerId);
 
         if (ratio == null) {
             log.warn("[실패] 전세가율 조회 결과 없음: 등기부ID={}", registerId);
-            return Map.of("error", "전세가율 정보가 없습니다.");
+            return null;
         }
+
+        JeonseRateDTO dto = new JeonseRateDTO();
+        dto.setRegisterId(registerId);
+        dto.setJeonseRate(ratio);
+
         log.info("[완료] 전세가율 서비스 조회 성공: 등기부ID={}, 전세가율={}", registerId, ratio);
-        return Map.of("jeonseRate", ratio);
+        return dto;
     }
 }
