@@ -76,7 +76,7 @@ public class RedisConfig {
         perCache.put("reports:detail", defaultConfig.entryTtl(Duration.ofDays(7)));
         perCache.put("contracts:list", defaultConfig.entryTtl(Duration.ofMinutes(15)));
         perCache.put("contracts:detail", defaultConfig.entryTtl(Duration.ofMinutes(30)));
-        perCache.put("diagnosis:result", defaultConfig.entryTtl(Duration.ofDays(7))); // Map 캐시
+        perCache.put("diagnosis:result", defaultConfig.entryTtl(Duration.ofDays(7)));
         perCache.put("safety:result", defaultConfig.entryTtl(Duration.ofDays(7)));
         perCache.put("registry:list", defaultConfig.entryTtl(Duration.ofMinutes(5)));
 
