@@ -79,6 +79,7 @@ public class RedisConfig {
         perCache.put("diagnosis:result", defaultConfig.entryTtl(Duration.ofDays(7)));
         perCache.put("safety:result", defaultConfig.entryTtl(Duration.ofDays(7)));
         perCache.put("registry:list", defaultConfig.entryTtl(Duration.ofMinutes(5)));
+        perCache.put("kosis:rate", defaultConfig.entryTtl(Duration.ofDays(1)));
 
         return RedisCacheManager.builder(cf)
                 .cacheDefaults(defaultConfig)
