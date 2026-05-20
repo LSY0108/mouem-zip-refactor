@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.scoula.jeonseRate.dto.JeonseRateDTO;
 import org.scoula.jeonseRate.enums.HouseTypeCode;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -32,6 +33,12 @@ public class KosisJeonseRateServiceImple implements KosisJeonseRateService{
 
 
 
+    @Cacheable(
+            value = "kosis:rate",
+            key = "#averageDealPriceOpt.get().buildingType + '_' + #objL2",
+            condition = "#averageDealPriceOpt.isPresent() && #objL2 != null",
+            unless = "#result.isEmpty()"
+    )
     public List<Map<String, Object>> fetchKosisData(Optional<JeonseRateDTO> averageDealPriceOpt, String objL2) {
         Optional<String> objL1 = HouseTypeCode.fromName(averageDealPriceOpt.get().getBuildingType());
 

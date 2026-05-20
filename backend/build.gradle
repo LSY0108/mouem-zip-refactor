@@ -128,4 +128,6 @@ dependencies {
 
 test {
   useJUnitPlatform()
+  jvmArgs '-Dfile.encoding=UTF-8'
+  systemProperty 'file.encoding', 'UTF-8'
 }
